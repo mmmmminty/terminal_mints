@@ -1,0 +1,11 @@
+/Users/careyx1/Desktop/planes/terminal_mints/mints_cli/target/debug/deps/getrandom-920458991e283a6f.rmeta: /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/lib.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/error.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/util.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/error_impls.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/util_libc.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/use_file.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/macos.rs
+
+/Users/careyx1/Desktop/planes/terminal_mints/mints_cli/target/debug/deps/getrandom-920458991e283a6f.d: /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/lib.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/error.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/util.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/error_impls.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/util_libc.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/use_file.rs /Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/macos.rs
+
+/Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/lib.rs:
+/Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/error.rs:
+/Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/util.rs:
+/Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/error_impls.rs:
+/Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/util_libc.rs:
+/Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/use_file.rs:
+/Users/careyx1/.cargo/registry/src/index.crates.io-6f17d22bba15001f/getrandom-0.2.11/src/macos.rs:

@@ -132,12 +132,16 @@ pub fn load_word_list(letters: i32, diff: &Difficulty) -> Vec<String> {
             words.push(word.to_ascii_uppercase());
         }
     }
-    
+
     words
 }
 
-pub fn word_exists(letters: i32, word: String) -> bool {
-    load_word_list(letters, &Difficulty::Easy).contains(&word)
-    || load_word_list(letters, &Difficulty::Medium).contains(&word)
-    || load_word_list(letters, &Difficulty::Hard).contains(&word)
+pub fn word_exists(letters: i32, word: &String) -> bool {
+    load_word_list(letters, &Difficulty::Easy).contains(word)
+    || load_word_list(letters, &Difficulty::Medium).contains(word)
+    || load_word_list(letters, &Difficulty::Hard).contains(word)
+}
+
+pub fn define(word: &String) -> String {
+    webster::dictionary(word).unwrap().to_string()
 }

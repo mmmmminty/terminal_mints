@@ -46,6 +46,7 @@ impl Game for Wordle {
     fn start(&mut self) {
         Display::display(DisplayType::Start, &self);
         //println!("Answer: {}", self.answer);
+        //println!("Definition: {}", define(&self.answer));
     }
 
     fn do_loop(&mut self) -> Result<i32, Box<dyn Error>> {

@@ -11,7 +11,7 @@ pub const GAME_RESTART: i32 = 32;
 /// Used to signify to the `mint_cli` to break the game loop.
 pub const GAME_OVER: i32 = 33;
 
-const DEFAULT_LIST: ListType = ListType::Webster;
+const DEFAULT_LIST: ListType = ListType::Gpt;
 
 // These are all added as const strings as to be embedded in the binary.
 // Any word lists to be added need to be embedded in the binary to be read
@@ -155,7 +155,9 @@ pub fn load_word_list(letters: i32, diff: &Difficulty) -> Vec<String> {
 /// 
 /// You have two options for santisation here, you can accept all words that meet the above 
 /// criteria, or you can accept only the words which exist in the webster dictionary (70-80%).
-/// The dictionary lookup is done by the `webster` crate.
+/// The dictionary lookup is done by the `webster` crate. Change the `DEFAULT_LIST` parameter
+/// to change which words to accept. Webster doesn't have *all* words, but the GPT list won't
+/// guarantee actual words. Choice is yours. GPT is set by default as it tends to be alright.
 /// 
 /// ## Word Counts
 ///
@@ -231,18 +233,14 @@ pub fn word_exists(letters: i32, word: &String) -> bool {
 }
 
 pub fn define(word: &String) -> String {
-    webster::dictionary(word).expect("Word not defined!").to_string()
+    webster::dictionary(word).unwrap_or("No definition found!").to_string()
 }
 
 pub fn hint(word: &String) -> String {
     let word = word.to_ascii_lowercase();
     let definition = define(&word);
-    let mut filler = "[".to_string();
-    for _ in 0..word.len() {
-        filler.push('_');
-    }
-    filler.push(']');
-    definition.replace(&word, &filler)
+    let filler = "_".repeat(word.len());
+    definition.replace(&word, &format!("[{filler}]"))
 }
 
 // Dev function used to check the overlap of word-lists.

@@ -3,7 +3,7 @@ use mints_lib::*;
 use std::{
     collections::HashMap,
     error::Error,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, Write},
     time::{Instant, Duration},
 };
 
@@ -121,16 +121,26 @@ impl Wordle {
 
     fn handle_commands(&mut self, cmd: &String) -> i32 {
         match cmd.as_str() {
-            "!hint" => {
+            "!hint" | "!h" => {
                 println!("Hint: {}", hint(&self.answer));
                 GAME_ONGOING
             },
-            "!restart" | "!next" => {
+            "!restart" | "!next" | "!reset" | "!r" => {
                 println!("The word was {}!", self.answer);
-                std::thread::sleep(Duration::from_secs(2));
+
+                print!("Restarting in 3.. ");
+                std::io::stdout().flush().expect("Failed to flush stdout");
+                std::thread::sleep(Duration::from_secs(1));
+                print!("2.. ");
+                std::io::stdout().flush().expect("Failed to flush stdout");
+                std::thread::sleep(Duration::from_secs(1));
+                print!("1.. ");
+                std::io::stdout().flush().expect("Failed to flush stdout");
+                std::thread::sleep(Duration::from_secs(1));
+
                 GAME_RESTART
             },
-            "!quit" | "!leave" | "!exit" => {
+            "!quit" | "!leave" | "!exit" | "!q" => {
                 GAME_OVER
             }
             _ => {

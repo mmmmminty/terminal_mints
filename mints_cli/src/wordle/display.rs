@@ -33,7 +33,7 @@ impl Display {
         };
 
         // Calculate padding
-        let text_width = header_text.len() + 10; // Adding 10 for the side indicators ("== ", " ==")
+        let text_width = header_text.len() + (game.max_letters as usize * 2); // Adding 10 for the side indicators ("== ", " ==")
         let padding_length = term_width / 2 - text_width / 2;
         let padding = "=".repeat(padding_length);
 

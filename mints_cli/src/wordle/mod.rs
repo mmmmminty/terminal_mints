@@ -45,8 +45,8 @@ impl Game for Wordle {
 
     fn start(&mut self) {
         Display::display(DisplayType::Start, &self);
-        //println!("Answer: {}", self.answer);
-        //println!("Definition: {}", define(&self.answer));
+        // println!("Answer: {}", self.answer);
+        // println!("Hint: {}", hint(&self.answer));
     }
 
     fn do_loop(&mut self) -> Result<i32, Box<dyn Error>> {
@@ -61,7 +61,7 @@ impl Game for Wordle {
             println!("{guess} is not a {}-letter word!", self.max_letters);
 
         // Is an actual word
-        } else if !self.words.contains(&guess) {
+        } else if !word_exists(self.max_letters, &guess) {
             println!("{} is not a word silly!", guess);
 
         // Already guessed

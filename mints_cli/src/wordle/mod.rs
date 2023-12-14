@@ -4,7 +4,7 @@ use std::{
     collections::HashMap,
     error::Error,
     io::{BufRead, BufReader},
-    time::Instant,
+    time::{Instant, Duration},
 };
 
 mod display;
@@ -55,6 +55,11 @@ impl Game for Wordle {
             Some(s) => s.unwrap().to_ascii_uppercase(),
             None => return Ok(GAME_OVER),
         };
+
+        // Handle command and early return
+        if guess.starts_with('!') {
+            return Ok(self.handle_commands(&guess.to_ascii_lowercase()));
+        }
 
         // Correct amount of letters
         if guess.len() != self.max_letters as usize {
@@ -111,6 +116,27 @@ impl Wordle {
             DisplayType::Failure
         } else {
             DisplayType::GameBoard
+        }
+    }
+
+    fn handle_commands(&mut self, cmd: &String) -> i32 {
+        match cmd.as_str() {
+            "!hint" => {
+                println!("Hint: {}", hint(&self.answer));
+                GAME_ONGOING
+            },
+            "!restart" | "!next" => {
+                println!("The word was {}!", self.answer);
+                std::thread::sleep(Duration::from_secs(2));
+                GAME_RESTART
+            },
+            "!quit" | "!leave" | "!exit" => {
+                GAME_OVER
+            }
+            _ => {
+                println!("Unknown command!");
+                GAME_ONGOING
+            }
         }
     }
 }

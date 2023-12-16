@@ -57,7 +57,6 @@
 57. Harmony
 58. Healthy
 59. Heroism
-60. Hilarity
 61. Honesty
 62. Humbled
 63. Imagination
@@ -68,7 +67,6 @@
 68. Intense
 69. Journey
 70. Joyful
-71. Jubilee
 72. Knowledge
 73. Lavender
 74. Laughter
@@ -483,11 +481,9 @@
 183. Wonders
 184. Workman
 185. Wrinkle
-186. Xyloids
 187. Yearned
 188. Yelling
 189. Yellow
-190. Zephyrs
 191. Zeppelin
 192. Zeroes
 193. Abandon

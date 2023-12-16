@@ -3,8 +3,8 @@ use mints_lib::*;
 use std::{
     collections::HashMap,
     error::Error,
-    io::{BufRead, BufReader},
-    time::Instant,
+    io::{BufRead, BufReader, Write},
+    time::{Instant, Duration},
 };
 
 mod display;
@@ -45,8 +45,8 @@ impl Game for Wordle {
 
     fn start(&mut self) {
         Display::display(DisplayType::Start, &self);
-        //println!("Answer: {}", self.answer);
-        //println!("Definition: {}", define(&self.answer));
+        // println!("Answer: {}", self.answer);
+        // println!("Hint: {}", hint(&self.answer));
     }
 
     fn do_loop(&mut self) -> Result<i32, Box<dyn Error>> {
@@ -56,12 +56,17 @@ impl Game for Wordle {
             None => return Ok(GAME_OVER),
         };
 
+        // Handle command and early return
+        if guess.starts_with('!') {
+            return Ok(self.handle_commands(&guess.to_ascii_lowercase()));
+        }
+
         // Correct amount of letters
         if guess.len() != self.max_letters as usize {
             println!("{guess} is not a {}-letter word!", self.max_letters);
 
         // Is an actual word
-        } else if !self.words.contains(&guess) {
+        } else if !word_exists(self.max_letters, &guess) {
             println!("{} is not a word silly!", guess);
 
         // Already guessed
@@ -111,6 +116,37 @@ impl Wordle {
             DisplayType::Failure
         } else {
             DisplayType::GameBoard
+        }
+    }
+
+    fn handle_commands(&mut self, cmd: &String) -> i32 {
+        match cmd.as_str() {
+            "!hint" | "!h" => {
+                println!("Hint: {}", hint(&self.answer));
+                GAME_ONGOING
+            },
+            "!restart" | "!next" | "!reset" | "!r" => {
+                println!("The word was {}!", self.answer);
+
+                print!("Restarting in 3.. ");
+                std::io::stdout().flush().expect("Failed to flush stdout");
+                std::thread::sleep(Duration::from_secs(1));
+                print!("2.. ");
+                std::io::stdout().flush().expect("Failed to flush stdout");
+                std::thread::sleep(Duration::from_secs(1));
+                print!("1.. ");
+                std::io::stdout().flush().expect("Failed to flush stdout");
+                std::thread::sleep(Duration::from_secs(1));
+
+                GAME_RESTART
+            },
+            "!quit" | "!leave" | "!exit" | "!q" => {
+                GAME_OVER
+            }
+            _ => {
+                println!("Unknown command!");
+                GAME_ONGOING
+            }
         }
     }
 }

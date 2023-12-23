@@ -8,13 +8,13 @@ mod wordle;
 fn main() {
     let args = Args::parse();
 
-    match args.game {
-        Mints::Wordle => run_game(wordle::Wordle::new(&args), &args),
-        Mints::Hangman => run_game(hangman::Hangman::new(&args), &args),
-    }
+    while match args.game {
+        Mints::Wordle => run_game(wordle::Wordle::new(&args)),
+        Mints::Hangman => run_game(hangman::Hangman::new(&args)),
+    } {}
 }
 
-fn run_game<G: Game>(mut game: G, args: &Args) {
+fn run_game<G: Game>(mut game: G) -> bool {
     game.start();
 
     let mut code;
@@ -31,9 +31,8 @@ fn run_game<G: Game>(mut game: G, args: &Args) {
             GAME_ONGOING => continue,
             GAME_OVER => break,
             GAME_RESTART => {
-                run_game(wordle::Wordle::new(args), args);
-                break;
-            }
+                return true;
+            },
             _ => break,
         }
     }

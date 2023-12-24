@@ -2,8 +2,9 @@ use clap::Parser;
 use mints_lib::*;
 
 // Games:
-mod hangman;
 mod wordle;
+mod hangman;
+mod anagrams;
 
 fn main() {
     let args = Args::parse();
@@ -11,6 +12,7 @@ fn main() {
     while match args.game {
         Mints::Wordle => run_game(wordle::Wordle::new(&args)),
         Mints::Hangman => run_game(hangman::Hangman::new(&args)),
+        Mints::Anagrams => run_game(anagrams::Anagrams::new(&args))
     } {}
 }
 

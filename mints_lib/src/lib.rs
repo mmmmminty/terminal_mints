@@ -79,7 +79,8 @@ enum ListType {
 #[derive(ValueEnum, Clone, Debug)]
 pub enum Mints {
     Wordle,
-    Hangman
+    Hangman,
+    Anagrams
 }
 
 #[derive(ValueEnum, Clone, Debug)]

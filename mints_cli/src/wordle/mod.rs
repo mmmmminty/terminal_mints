@@ -4,7 +4,7 @@ use std::{
     collections::HashMap,
     error::Error,
     io::{BufRead, BufReader, Write},
-    time::{Instant, Duration},
+    time::{Duration, Instant},
 };
 
 mod display;
@@ -73,10 +73,7 @@ impl Game for Wordle {
         } else if self
             .guesses
             .values()
-            .any(|g| g
-                    .as_ref()
-                    .is_some_and(|s| s.contains(&guess))
-                )
+            .any(|g| g.as_ref().is_some_and(|s| s.contains(&guess)))
         {
             println!("You've guessed {guess} already!");
 
@@ -124,7 +121,7 @@ impl Wordle {
             "!hint" | "!h" => {
                 println!("Hint: {}", hint(&self.answer));
                 GAME_ONGOING
-            },
+            }
             "!restart" | "!next" | "!reset" | "!r" => {
                 println!("The word was {}!", self.answer);
 
@@ -139,10 +136,8 @@ impl Wordle {
                 std::thread::sleep(Duration::from_secs(1));
 
                 GAME_RESTART
-            },
-            "!quit" | "!leave" | "!exit" | "!q" => {
-                GAME_OVER
             }
+            "!quit" | "!leave" | "!exit" | "!q" => GAME_OVER,
             _ => {
                 println!("Unknown command!");
                 GAME_ONGOING

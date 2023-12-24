@@ -32,7 +32,7 @@ fn run_game<G: Game>(mut game: G) -> bool {
             GAME_OVER => break,
             GAME_RESTART => {
                 return true;
-            },
+            }
             _ => break,
         }
     }

@@ -1,6 +1,21 @@
-use std::{error::Error, collections::{HashMap, HashSet}, ops::Deref};
+use std::{error::Error, collections::HashMap};
 use clap::{ValueEnum, Parser, value_parser};
 use rand::seq::SliceRandom;
+
+/// Just a clutter-helper to avoid repeated `println!()`. Specify the number of newlines
+/// desired or omit for a single one.
+
+#[macro_export]
+macro_rules! newln {
+    ($repeat:expr) => {
+        for _ in 0..$repeat {
+            println!();
+        }
+    };
+    () => {
+        println!();
+    };
+}
 
 /// Used to signify to the `mint_cli` to continue the game loop.
 pub const GAME_ONGOING: i32 = 31;

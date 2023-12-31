@@ -6,9 +6,12 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anagrambot = "1.0.1"
 clap = { version = "4.4.11", features = ["derive"] }
 colored = "2.1.0"
 mints_lib = { path = "../mints_lib" }
 rand = "0.8.5"
+terminal-fonts = "0.1.0"
 terminal_size = "0.3.0"
+webster = "0.3.0"
 

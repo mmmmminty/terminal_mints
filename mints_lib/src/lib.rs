@@ -31,26 +31,26 @@ const DEFAULT_LIST: ListType = ListType::Gpt;
 // These are all added as const strings as to be embedded in the binary.
 // Any word lists to be added need to be embedded in the binary to be read
 // by the read_word_list function.
-const WORDS_4E: &str = include_str!("../word_lists/4E.txt");
-const WORDS_4M: &str = include_str!("../word_lists/4M.txt");
-const WORDS_4H: &str = include_str!("../word_lists/4H.txt");
-const WORDS_5E: &str = include_str!("../word_lists/5E.txt");
-const WORDS_5M: &str = include_str!("../word_lists/5M.txt");
-const WORDS_5H: &str = include_str!("../word_lists/5H.txt");
-const WORDS_6E: &str = include_str!("../word_lists/6E.txt");
-const WORDS_6M: &str = include_str!("../word_lists/6M.txt");
-const WORDS_6H: &str = include_str!("../word_lists/6H.txt");
-const WORDS_7E: &str = include_str!("../word_lists/7E.txt");
-const WORDS_7M: &str = include_str!("../word_lists/7M.txt");
-const WORDS_7H: &str = include_str!("../word_lists/7H.txt");
-const WORDS_8E: &str = include_str!("../word_lists/8E.txt");
-const WORDS_8M: &str = include_str!("../word_lists/8M.txt");
-const WORDS_8H: &str = include_str!("../word_lists/8H.txt");
+pub const WORDS_4E: &str = include_str!("../word_lists/4E.txt");
+pub const WORDS_4M: &str = include_str!("../word_lists/4M.txt");
+pub const WORDS_4H: &str = include_str!("../word_lists/4H.txt");
+pub const WORDS_5E: &str = include_str!("../word_lists/5E.txt");
+pub const WORDS_5M: &str = include_str!("../word_lists/5M.txt");
+pub const WORDS_5H: &str = include_str!("../word_lists/5H.txt");
+pub const WORDS_6E: &str = include_str!("../word_lists/6E.txt");
+pub const WORDS_6M: &str = include_str!("../word_lists/6M.txt");
+pub const WORDS_6H: &str = include_str!("../word_lists/6H.txt");
+pub const WORDS_7E: &str = include_str!("../word_lists/7E.txt");
+pub const WORDS_7M: &str = include_str!("../word_lists/7M.txt");
+pub const WORDS_7H: &str = include_str!("../word_lists/7H.txt");
+pub const WORDS_8E: &str = include_str!("../word_lists/8E.txt");
+pub const WORDS_8M: &str = include_str!("../word_lists/8M.txt");
+pub const WORDS_8H: &str = include_str!("../word_lists/8H.txt");
 
 /// This is the `words_alpha.txt` list from the [dwyl/english_words](https://github.com/dwyl/english-words/blob/master/words_alpha.txt)
 /// Github repository. It contains all alpha words. Used to check if a guessed
 /// word actually exists... Considering the size of the list, most guesses probably do... 
-const WORDS_MASTER: &str = include_str!("../word_lists/Master.txt");
+pub const WORDS_MASTER: &str = include_str!("../word_lists/Master.txt");
 
 /// Default methods for a terminal-based game.
 pub trait Game {

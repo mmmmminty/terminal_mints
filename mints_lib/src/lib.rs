@@ -2,9 +2,8 @@ use std::{error::Error, collections::HashMap};
 use clap::{ValueEnum, Parser, value_parser};
 use rand::seq::SliceRandom;
 
-/// Just a clutter-helper to avoid repeated `println!()`. Specify the number of newlines
+/// A clutter-helper to avoid repeated `println!()`. Specify the number of newlines
 /// desired or omit for a single one.
-
 #[macro_export]
 macro_rules! newln {
     ($repeat:expr) => {
@@ -14,6 +13,30 @@ macro_rules! newln {
     };
     () => {
         println!();
+    };
+}
+
+/// A clutter helper to sleep for a specified amount of time (milliseconds)
+#[macro_export]
+macro_rules! sleep {
+    ($millis:expr) => {
+        std::thread::sleep(std::time::Duration::from_millis($millis));
+    };
+}
+
+/// A clutter helper to flush the stdout on call
+#[macro_export]
+macro_rules! flush {
+    () => {
+        std::io::stdout().flush().expect("Failed to flush stdout");
+    };
+}
+
+/// A clutter helper to clear the terminal screen
+#[macro_export]
+macro_rules! clear {
+    () => {
+        print!("{}[2J", 27 as char);
     };
 }
 

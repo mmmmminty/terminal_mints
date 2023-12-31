@@ -74,17 +74,19 @@ impl Game for Anagrams {
         }
 
         // Hopefully this spends less than 5s picking a scramble.
-        let loading_handle = thread::spawn(Self::loading_screen);
-        if self.anagram.is_none() {
-            self.anagram = Some(Anagram::new(&list, ANAGRAM_SCRAMBLE_SIZE, &self.params));
-        }
-        loading_handle.join().expect("Failed to join loading screen");
+        thread::scope(|s| {
+            s.spawn(|| { self.anagram = Some(Anagram::new(&list, ANAGRAM_SCRAMBLE_SIZE, &self.params)) });
+            Self::loading_screen();
+        });
+        clear!();
+
+        self.display_big_scramble();
     }
 
     fn do_loop(&mut self) -> Result<i32, Box<dyn Error>> {
         if self.anagram.is_none() {
             println!("Checking in 2s..");
-            sleep(Duration::from_secs(2));
+            sleep!(2000);
             return Ok(GAME_RESTART);
         }
 
@@ -99,6 +101,7 @@ impl Game for Anagrams {
 impl Anagrams {
     /// This gives the game about 5s to pick a scramble, which should be enough time.
     /// This is not implemented with any actual asynchronous code, it's just a filler.
+    /// You must clear the screen when you're ready!
     fn loading_screen() {
         let middle = if let Some((_, terminal_size::Height(h))) = terminal_size() {
             (h as usize / 2) - 3
@@ -112,43 +115,45 @@ impl Anagrams {
 
         for _ in 0..3 {
             print!(".");
-            std::io::stdout().flush().unwrap();
-            sleep(Duration::from_millis(700));
+            flush!();
+            sleep!(700);
         }
 
-        print!("{}[2J", 27 as char);
+        clear!();
 
         for (i, _) in header.chars().enumerate() {
             print!("{}", terminal_fonts::to_block_string(&header[0..=i]));
             newln!(middle);
-            std::io::stdout().flush().unwrap();
+            flush!();
             
-            if i == 7 {
-                sleep(Duration::from_millis(800));
+            if i == header.len() - 1 {
+                sleep!(800);
             } else {
-                sleep(Duration::from_millis(300));
+                sleep!(300);
+                clear!();
             }
-            
-            print!("{}[2J", 27 as char);
             newln!();
         }
     }
 
     fn display_big_scramble(&self) {
-        for letter in self
-            .get_scramble()
-            .to_ascii_uppercase()
-            .chars() {
-                print!("{}", terminal_fonts::to_block_string(&letter.to_string()).trim());
-                std::io::stdout().flush().unwrap();
-                sleep(Duration::from_millis(500));
+        let scramble = self.get_scramble().to_ascii_uppercase();
+        for (i, _) in scramble.chars().enumerate() {
+            print!("{}", terminal_fonts::to_block_string(&scramble[0..=i]));
+            newln!();
+            flush!();
+            
+            if i == scramble.len() - 1 {
+                sleep!(500);
+            } else {
+                sleep!(100);
+            }
+            
+            clear!();
+            newln!();
         }
 
-        print!("{}[2J", 27 as char);
-        print!("{}", terminal_fonts::to_block_string(self.get_scramble().as_str())
-                .trim()
-                .yellow()
-            );
+        print!("{}", terminal_fonts::to_block_string(scramble.as_str()).yellow());
         newln!();
     }
 

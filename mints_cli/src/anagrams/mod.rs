@@ -6,7 +6,6 @@ use terminal_size::terminal_size;
 use self::{anagram::Anagram, utils::AnagramParams};
 
 mod anagram;
-mod display;
 mod utils;
 
 /// This is the size of the scramble the user will need to solve. This is also
@@ -81,10 +80,11 @@ impl Game for Anagrams {
             return;
         }
 
-        // Hopefully this spends less than 5s picking a scramble.
+        // Hopefully this spends less than 3s picking a scramble.
         thread::scope(|s| {
             s.spawn(|| { self.anagram = Some(Anagram::new(&list, ANAGRAM_SCRAMBLE_SIZE, &self.params)) });
-            Self::loading_screen();
+            // Self::loading_screen();
+            titled_loading_screen("ANAGRAMS",3000);
         });
 
         self.display_big_scramble(false);
@@ -103,6 +103,11 @@ impl Game for Anagrams {
             Some(s) => s.unwrap().to_ascii_uppercase(),
             None => return Ok(GAME_OVER),
         };
+
+        // Handle command and early return
+        if guess.starts_with('!') {
+            return Ok(self.handle_commands(&guess.to_ascii_lowercase()));
+        }
 
         if !guess.chars().all(|c| c.is_ascii_alphabetic()) {
             println!("No special characters allowed silly!");
@@ -145,43 +150,6 @@ impl Game for Anagrams {
 }
 
 impl Anagrams {
-    /// This gives the game about 5s to pick a scramble, which should be enough time.
-    /// This is not implemented with any actual asynchronous code, it's just a filler.
-    /// You must clear the screen when you're ready!
-    fn loading_screen() {
-        let middle = if let Some((_, terminal_size::Height(h))) = terminal_size() {
-            (h as usize / 2) - 3
-        } else {
-            0 // Default width in case terminal size can't be determined
-        };  
-
-        let header = "ANAGRAMS";
-        // newln!();
-        // print!("Welcome to");
-
-        // for _ in 0..3 {
-        //     print!(".");
-        //     flush!();
-        //     sleep!(700);
-        // }
-
-        clear!();
-
-        for (i, _) in header.chars().enumerate() {
-            print!("{}", terminal_fonts::to_block_string(&header[0..=i]));
-            newln!(middle);
-            flush!();
-            
-            if i == header.len() - 1 {
-                sleep!(800);
-            } else {
-                sleep!(300);
-                clear!();
-            }
-            newln!();
-        }
-    }
-
     fn display_big_scramble(&self, skip_animation: bool) {
         let scramble = self.get_scramble().to_ascii_uppercase();
         clear!();
@@ -250,15 +218,15 @@ impl Anagrams {
         let left = format!("{}>>", "=".repeat(padding_width));
         let right = format!("<<{}", "=".repeat(padding_width + 1));
 
-        match self.answers.get(&section).unwrap().get(row) {
+        let section_answers = self.answers.get(&section).unwrap();
+        match section_answers.get(row) {
             Some(answer) => {
                 print!("{} ", left);
                     for c in answer.chars() {
                         print!("{} ", c.to_ascii_uppercase().to_string().green());
                         flush!();
 
-                        if self.answers.get(&section).unwrap().get(row + 1).is_none()
-                        && section == answer.len() {
+                        if section_answers.get(row + 1).is_none() {
                             sleep!(100);
                         }
                     }
@@ -267,8 +235,8 @@ impl Anagrams {
             None => {
                 if let Some(guess) = wrong {
                     if section == guess.len() 
-                    && (self.answers.get(&section).unwrap().get(row - 1).is_some() 
-                    || (self.answers.get(&section).unwrap().get(row).is_none() 
+                    && (section_answers.get(row - 1).is_some() 
+                    || (section_answers.get(row).is_none() 
                     && row == 0)) {
                         print!("{} ", left);
                         for c in guess.chars() {
@@ -324,5 +292,31 @@ impl Anagrams {
             .clone()
             .expect("Anagram not chosen!")
             .scramble
+    }
+
+    fn handle_commands(&mut self, cmd: &String) -> i32 {
+        match cmd.as_str() {
+            "!hint" | "!h" => {
+                todo!()
+            }
+            "!restart" | "!next" | "!reset" | "!r" => {
+                print!("Restarting in 3.. ");
+                flush!();
+                sleep!(1000);
+                print!("2.. ");
+                flush!();
+                sleep!(1000);
+                print!("1.. ");
+                flush!();
+                sleep!(1000);
+
+                GAME_RESTART
+            }
+            "!quit" | "!leave" | "!exit" | "!q" => GAME_OVER,
+            _ => {
+                println!("Unknown command!");
+                GAME_ONGOING
+            }
+        }
     }
 }

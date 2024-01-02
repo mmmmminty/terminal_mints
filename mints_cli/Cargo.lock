@@ -230,6 +230,8 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "rand",
+ "terminal-fonts",
+ "terminal_size",
  "webster",
 ]
 

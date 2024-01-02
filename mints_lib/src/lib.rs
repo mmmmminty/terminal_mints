@@ -1,4 +1,4 @@
-use std::{error::Error, collections::HashMap};
+use std::{error::Error, collections::HashMap, io::Write};
 use clap::{ValueEnum, Parser, value_parser};
 use rand::seq::SliceRandom;
 
@@ -280,6 +280,36 @@ pub fn hint(word: &String) -> String {
     let definition = define(&word);
     let filler = "_".repeat(word.len());
     definition.replace(&word, &format!("[{filler}]"))
+}
+
+/// Prints a given header in block form, in the fashion of a pixel-game loading screen.
+/// Specify the desired loading time by passing in `ms` in milliseconds. This function will 
+/// not clear the terminal after it finishes, leaving it to the game to handle when the loading
+/// screen should clear.
+pub fn titled_loading_screen(header: &str, ms: usize) {
+    let middle = if let Some((_, terminal_size::Height(h))) = terminal_size::terminal_size() {
+        (h as usize / 2) - 3
+    } else {
+        0 // Default height in case terminal size can't be determined
+    };
+
+    let hold_time = ms / 4;
+    let print_time = ((ms / 4) * 3) / header.len();
+
+    clear!();
+    for (i, _) in header.chars().enumerate() {
+        print!("{}", terminal_fonts::to_block_string(&header[0..=i]));
+        newln!(middle);
+        flush!();
+        
+        if i == header.len() - 1 {
+            sleep!(hold_time as u64);
+        } else {
+            sleep!(print_time as u64);
+            clear!();
+        }
+        newln!();
+    }
 }
 
 // Dev function used to check the overlap of word-lists.

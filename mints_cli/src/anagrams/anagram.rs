@@ -121,8 +121,11 @@ impl Anagram {
     }
 
     pub fn valid_word(&self, word: &String) -> bool {
-        self.words.get(&word.len()).expect("No entry for letter amount").contains(word)
-    }
+        match self.words.get(&word.len()) {
+             Some(e) => e.contains(word),
+             None => false,
+         }
+     }
 
     // THE BELOW ARE OBSOLETE METHODS OF GENERATING ANAGRAMS ARCHAICLY. 
     // pub fn generate_anagrams(input: &str, scramble_limit: usize) -> Vec<Anagram> {

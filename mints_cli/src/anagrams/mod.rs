@@ -45,10 +45,11 @@ pub struct Anagrams {
 }
 
 impl Game for Anagrams {
-    fn new(args: &Args) -> Self {
-        let params = AnagramParams::new(&args.difficulty);
-        let mut answers = HashMap::new();
+    fn new(mut args: Args) -> Self {
+        Anagrams::parse_args(&mut args);
+        let params = AnagramParams::new(&args.difficulty.as_ref().unwrap(), args.guesses, args.letters);
 
+        let mut answers = HashMap::new();
         for i in params.letter_range.clone() {
             answers.insert(i, Vec::<String>::new());
         }
@@ -60,7 +61,7 @@ impl Game for Anagrams {
             anagram: None,
             answers,
             time_started: Instant::now(),
-            difficulty: args.difficulty.clone(),
+            difficulty: args.difficulty.unwrap(),
             params,
         }
     }
@@ -173,6 +174,29 @@ impl Game for Anagrams {
 }
 
 impl Anagrams {
+    fn parse_args(args: &mut Args) {
+        if args.difficulty.is_none() {
+            args.difficulty = Some(Difficulty::Easy);
+        }
+
+        if args.guesses.is_none() || args.letters.is_none() {
+            return;
+        } else {
+            let guesses = args.guesses.unwrap();
+            let letters = args.letters.unwrap();
+    
+            if letters < 3 || letters > 6 {
+                warning!("Letters must be between 3 & 6!");
+                args.letters = None;
+                args.guesses = None;
+            }
+    
+            if guesses > 10 {
+                warning!("Guesses larger than 10 might take a long time (or might never) load as the algorithm must find Anagrams with sufficient formable words!");
+            }
+        }
+    }
+
     fn display_big_scramble(&self, skip_animation: bool, color: &str) {
         let scramble = self.get_scramble().to_ascii_uppercase();
         clear!();
@@ -194,10 +218,37 @@ impl Anagrams {
             }
         }
 
-        print!(
-            "{}",
-            terminal_fonts::to_block_string(scramble.as_str()).color(color)
-        );
+        if self.is_blitz_mode() && !skip_animation {
+            let blitz = terminal_fonts::to_block_string(scramble.as_str());
+            println!("{}", blitz.red());
+            flush!();
+            sleep!(100);
+            clear!();
+            println!("{}", blitz.blue());
+            flush!();
+            sleep!(100);
+            clear!();
+            println!("{}", blitz.green());
+            flush!();
+            sleep!(100);
+            clear!();
+            println!("{}", blitz.yellow());
+            flush!();
+            sleep!(100);
+            clear!();
+            println!("{}", blitz.purple());
+            flush!();
+            sleep!(100);
+            clear!();
+            println!("{}", blitz.color(color));
+            flush!();
+            sleep!(100);
+        } else {
+            print!(
+                "{}",
+                terminal_fonts::to_block_string(scramble.as_str()).color(color)
+            );
+        }
         newln!(3);
     }
 
@@ -219,7 +270,10 @@ impl Anagrams {
             / 2
             - 8;
 
-        let header = format!(" {section}-letter words ");
+        let header = match self.is_blitz_mode() {
+            true => " Blitz! ".to_string(),
+            false => format!(" {section}-letter words "),
+        };
         let padding_length = (section_width - header.len()) / 2;
         let padding = "=".repeat(padding_length);
 
@@ -327,6 +381,10 @@ impl Anagrams {
 
     fn get_words(&self) -> HashMap<usize, Vec<String>> {
         self.anagram.clone().expect("Anagram not chosen!").words
+    }
+
+    fn is_blitz_mode(&self) -> bool {
+        self.params.letter_range.clone().into_iter().count() == 1
     }
 
     fn handle_commands(&mut self, cmd: &String) -> i32 {

@@ -9,10 +9,10 @@ mod wordle;
 fn main() {
     let args = Args::parse();
 
-    while match args.game {
-        Mints::Wordle => run_game(wordle::Wordle::new(&args)),
-        Mints::Hangman => run_game(hangman::Hangman::new(&args)),
-        Mints::Anagrams => run_game(anagrams::Anagrams::new(&args)),
+    while match &args.game {
+        Mints::Wordle => run_game(wordle::Wordle::new(args.clone())),
+        Mints::Hangman => run_game(hangman::Hangman::new(args.clone())),
+        Mints::Anagrams => run_game(anagrams::Anagrams::new(args.clone())),
     } {}
 }
 

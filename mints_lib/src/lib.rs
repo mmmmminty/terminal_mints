@@ -41,6 +41,17 @@ macro_rules! clear {
     };
 }
 
+/// A macro to print a standardised warning. 
+#[macro_export]
+macro_rules! warning {
+    ($msg:literal) => {
+        newln!();
+        println!("{}{}", "WARNING: ".bold().red(), $msg.red());
+        newln!();
+        sleep!(4000);
+    };
+}
+
 /// Used to signify to the `mint_cli` to continue the game loop.
 pub const GAME_ONGOING: i32 = 31;
 
@@ -79,7 +90,7 @@ pub const WORDS_MASTER: &str = include_str!("../word_lists/Master.txt");
 /// Default methods for a terminal-based game.
 pub trait Game {
     /// Used to transform the arguments, if any, into the game object.
-    fn new(args: &Args) -> Self;
+    fn new(args: Args) -> Self;
 
     /// Starts the game. This is called **once** at the beginning by the
     /// `mint_cli`.
@@ -115,20 +126,23 @@ pub enum Difficulty {
     Hard,
 }
 
-#[derive(Parser, Debug)]
+#[derive(Parser, Debug, Clone)]
 pub struct Args {
     #[arg(help = "The game to play.")]
     pub game: Mints,
 
-    #[arg(short = 'g', long = "guesses", default_value_t = 6, value_parser = value_parser!(i32).range(3..=9))]
-    pub guesses: i32,
+    #[arg(short = 'g', long = "guesses")]
+    pub guesses: Option<i32>,
 
-    #[arg(short = 'l', long = "letters", default_value_t = 5, value_parser = value_parser!(i32).range(4..=8))]
-    pub letters: i32,
+    #[arg(short = 'l', long = "letters")]
+    pub letters: Option<i32>,
 
-    #[arg(short = 'd', long = "difficulty", default_value_t = Difficulty::Easy)]
+    #[arg(short = 't', long = "timer", value_parser = value_parser!(i32).range(1..=300))]
+    pub timer: Option<i32>,
+
+    #[arg(short = 'd', long = "difficulty")]
     #[clap(value_enum)]
-    pub difficulty: Difficulty,
+    pub difficulty: Option<Difficulty>,
 }
 
 pub fn choose_random_word(words: &[String]) -> String {

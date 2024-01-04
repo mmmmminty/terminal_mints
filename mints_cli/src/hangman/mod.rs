@@ -11,7 +11,7 @@ use terminal_size::{terminal_size, Width};
 use mints_lib::*;
 
 const HANGMAN_WORD_SIZE: i32 = 7;
-const HANGMAN_GUESS_SIZE: i32 = 7;
+const DEFAULT_GUESS_SIZE: i32 = 7;
 
 const ASCII_0: &str = include_str!("./ascii/0.txt");
 const ASCII_1: &str = include_str!("./ascii/1.txt");
@@ -29,14 +29,16 @@ pub struct Hangman {
     pub correct: Vec<char>,
     pub incorrect: Vec<char>,
     pub answer: String,
+    pub guesses: usize,
     pub time_started: Instant,
     pub difficulty: Difficulty,
     pub ascii: Vec<String>,
 }
 
 impl Game for Hangman {
-    fn new(args: &Args) -> Self {
-        let words = load_word_list(HANGMAN_WORD_SIZE, &args.difficulty);
+    fn new(mut args: Args) -> Self {
+        Hangman::parse_args(&mut args);
+        let words = load_word_list(HANGMAN_WORD_SIZE, &args.difficulty.as_ref().unwrap());
         let answer = choose_random_word(&words);
 
         Hangman {
@@ -44,8 +46,9 @@ impl Game for Hangman {
             correct: Vec::new(),
             incorrect: Vec::new(),
             answer,
+            guesses: args.guesses.unwrap() as usize,
             time_started: std::time::Instant::now(),
-            difficulty: args.difficulty.clone(),
+            difficulty: args.difficulty.unwrap(),
             ascii: vec![
                 ASCII_0, ASCII_1, ASCII_2, ASCII_3, ASCII_4, ASCII_5, ASCII_6,
             ]
@@ -97,7 +100,7 @@ impl Game for Hangman {
 
             if self.check_win() {
                 self.display(Some(true));
-            } else if self.incorrect.len() == HANGMAN_GUESS_SIZE as usize {
+            } else if self.incorrect.len() == self.guesses {
                 self.display(Some(false));
             } else {
                 self.turn += 1;
@@ -125,6 +128,22 @@ impl Game for Hangman {
 }
 
 impl Hangman {
+    fn parse_args(args: &mut Args) {
+        if args.guesses.is_some() {
+            warning!("Variable guess amounts aren't supported for Hangman (yet!)");
+        } 
+        
+        args.guesses = Some(DEFAULT_GUESS_SIZE);
+        
+        if args.letters.is_some() {
+            warning!("Variable word sizes aren't supported for Hangman (yet!)");
+        }
+
+        if args.difficulty.is_none() {
+            args.difficulty = Some(Difficulty::Easy);
+        }
+    }
+
     fn display(&self, win: Option<bool>) {
         // Clear terminal
         print!("{}[2J", 27 as char);

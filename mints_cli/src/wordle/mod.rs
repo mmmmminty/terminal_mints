@@ -7,8 +7,16 @@ use std::{
     time::{Duration, Instant},
 };
 
+use colored::Colorize;
+
 mod display;
 use crate::wordle::display::*;
+
+/// The default amount of guesses if not specified, or incorrect.
+const DEFAULT_GUESS_SIZE: i32 = 6;
+
+/// The default word size if not specified, or incorrect.
+const DEFAULT_WORD_SIZE: i32 = 5;
 
 #[derive(Clone)]
 pub struct Wordle {
@@ -23,11 +31,12 @@ pub struct Wordle {
 }
 
 impl Game for Wordle {
-    fn new(args: &Args) -> Self {
-        let words = load_word_list(args.letters, &args.difficulty);
+    fn new(mut args: Args) -> Self {
+        Wordle::parse_args(&mut args);
+        let words = load_word_list(args.letters.unwrap(), &args.difficulty.as_ref().unwrap());
 
         let mut map: HashMap<i32, Option<String>> = HashMap::new();
-        for i in 0..args.guesses {
+        for i in 0..args.guesses.unwrap() {
             map.insert(i, None);
         }
 
@@ -37,9 +46,9 @@ impl Game for Wordle {
             guesses: map,
             words,
             time_started: std::time::Instant::now(),
-            max_guesses: args.guesses,
-            max_letters: args.letters,
-            difficulty: args.difficulty.clone(),
+            max_guesses: args.guesses.unwrap(),
+            max_letters: args.letters.unwrap(),
+            difficulty: args.difficulty.unwrap(),
         }
     }
 
@@ -104,6 +113,26 @@ impl Game for Wordle {
 }
 
 impl Wordle {
+    fn parse_args(args: &mut Args) {
+        if args.guesses.is_none() {
+            args.guesses = Some(DEFAULT_GUESS_SIZE);
+        } else if args.guesses.is_some_and(|g| g < 3 || g > 9) {
+            warning!("Guesses must be between 3 & 9!");
+            args.guesses = Some(DEFAULT_GUESS_SIZE);
+        }
+
+        if args.letters.is_none() {
+            args.letters = Some(DEFAULT_WORD_SIZE);
+        } else if args.letters.is_some_and(|l| l < 4 || l > 8) {
+            warning!("Letters must be between 4 & 8!");
+            args.letters = Some(DEFAULT_WORD_SIZE);
+        }
+
+        if args.difficulty.is_none() {
+            args.difficulty = Some(Difficulty::Easy);
+        }
+    }
+
     fn guess(&mut self, guess: &String) -> DisplayType {
         self.guesses.insert(self.turn, Some(guess.clone()));
         self.turn += 1;

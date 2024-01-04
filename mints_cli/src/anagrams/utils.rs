@@ -10,8 +10,20 @@ pub struct AnagramParams {
 }
 
 impl AnagramParams {
-    pub fn new(diff: &Difficulty) -> Self {
+    pub fn new(diff: &Difficulty, guesses: Option<i32>, letters: Option<i32>) -> Self {
         let mut map = HashMap::new();
+
+        // Blitz mode:
+        if let (Some(guesses), Some(letters)) = (guesses, letters) {
+            let range = letters as usize..=letters as usize;
+            map.insert(letters as usize, (guesses as usize, 0, 0));
+
+            return AnagramParams {
+                letter_range: range,
+                difficulty: Difficulty::Easy,
+                entry_amounts: map,
+            };
+        } 
 
         let range = match diff {
             Difficulty::Easy => 4..=6,
@@ -26,7 +38,7 @@ impl AnagramParams {
                 6 => (1, 3, 4),
                 7 => (0, 2, 3),
                 8 => (0, 0, 2),
-                _ => panic!("Check that ranges and entries match!s"),
+                _ => panic!("Check that ranges and entries match!"),
             };
             map.insert(i, insert);
         }

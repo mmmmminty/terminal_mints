@@ -1,9 +1,16 @@
-use std::{time::Instant, error::Error, io::{Write, BufReader, BufRead}, thread::{self}, collections::HashMap};
+use std::{
+    collections::HashMap,
+    error::Error,
+    io::{BufRead, BufReader, Write},
+    thread::{self},
+    time::Instant,
+};
 
+use self::{anagram::Anagram, utils::AnagramParams};
 use colored::Colorize;
 use mints_lib::*;
+use rand::seq::SliceRandom;
 use terminal_size::terminal_size;
-use self::{anagram::Anagram, utils::AnagramParams};
 
 mod anagram;
 mod utils;
@@ -13,8 +20,8 @@ mod utils;
 pub const ANAGRAM_SCRAMBLE_SIZE: usize = 8;
 
 /// This list contains more common words used as to avoid random guessing of words that
-/// don't seem like exist. When this is paired with a entry min of 5 and max of 8, you 
-/// get 300 different anagrams. 
+/// don't seem like exist. When this is paired with a entry min of 5 and max of 8, you
+/// get 300 different anagrams.
 pub const ANAGRAM_WORD_LIST: &str = include_str!("./anagram_words.txt");
 
 /// This is the minimum terminal width required to play Anagrams (as a result of the big text).
@@ -34,7 +41,7 @@ pub struct Anagrams {
     /// next level.
     pub difficulty: Difficulty,
 
-    pub params: AnagramParams
+    pub params: AnagramParams,
 }
 
 impl Game for Anagrams {
@@ -54,7 +61,7 @@ impl Game for Anagrams {
             answers,
             time_started: Instant::now(),
             difficulty: args.difficulty.clone(),
-            params
+            params,
         }
     }
 
@@ -73,21 +80,24 @@ impl Game for Anagrams {
             w as usize
         } else {
             80 // Default width in case terminal size can't be determined
-        };     
+        };
 
         if term_width < MIN_TERM_WIDTH {
-            println!("Increase your terminal size goof! (Curr: {term_width}, Min: {MIN_TERM_WIDTH})");
+            println!(
+                "Increase your terminal size goof! (Curr: {term_width}, Min: {MIN_TERM_WIDTH})"
+            );
             return;
         }
 
         // Hopefully this spends less than 3s picking a scramble.
         thread::scope(|s| {
-            s.spawn(|| { self.anagram = Some(Anagram::new(&list, ANAGRAM_SCRAMBLE_SIZE, &self.params)) });
-            // Self::loading_screen();
-            titled_loading_screen("ANAGRAMS",3000);
+            s.spawn(|| {
+                self.anagram = Some(Anagram::new(&list, ANAGRAM_SCRAMBLE_SIZE, &self.params))
+            });
+            titled_loading_screen("ANAGRAMS", "white", 3000);
         });
 
-        self.display_big_scramble(false);
+        self.display_big_scramble(false, "yellow");
         self.display(None);
     }
 
@@ -111,25 +121,30 @@ impl Game for Anagrams {
 
         if !guess.chars().all(|c| c.is_ascii_alphabetic()) {
             println!("No special characters allowed silly!");
-
         } else if !self.params.letter_range.contains(&guess.len()) {
             println!("No {}-letter words needed goof!", guess.len());
-
         } else {
-            if !self.anagram.as_ref().unwrap().valid_word(&guess.to_ascii_lowercase()) {
-                self.display_big_scramble(true);
+            if !self
+                .anagram
+                .as_ref()
+                .unwrap()
+                .valid_word(&guess.to_ascii_lowercase())
+            {
+                self.display_big_scramble(true, "red");
                 self.display(Some(guess));
             } else {
                 if !self.insert_entry(&guess) {
                     println!("No more {}-letter words needed", guess.len());
                 } else {
-                    self.display_big_scramble(true);
+                    self.display_big_scramble(true, "green");
                     self.display(None);
                 }
             }
         }
-        
+
         if self.check_win() {
+            newln!();
+            println!("You won!");
             println!("Play again? (y/n)");
 
             return match input.next() {
@@ -144,13 +159,19 @@ impl Game for Anagrams {
         Ok(GAME_ONGOING)
     }
 
-    fn finish(self) {
+    fn finish(mut self) {
+        clear!();
+        self.populate_answers();
+        self.display_big_scramble(false, "red");
+        self.display(None);
+        println!("Here's what you missed!");
+
         drop(self);
     }
 }
 
 impl Anagrams {
-    fn display_big_scramble(&self, skip_animation: bool) {
+    fn display_big_scramble(&self, skip_animation: bool, color: &str) {
         let scramble = self.get_scramble().to_ascii_uppercase();
         clear!();
 
@@ -159,19 +180,22 @@ impl Anagrams {
                 print!("{}", terminal_fonts::to_block_string(&scramble[0..=i]));
                 newln!();
                 flush!();
-                
+
                 if i == scramble.len() - 1 {
                     sleep!(500);
                 } else {
                     sleep!(100);
                 }
-                
+
                 clear!();
                 newln!();
             }
         }
 
-        print!("{}", terminal_fonts::to_block_string(scramble.as_str()).yellow());
+        print!(
+            "{}",
+            terminal_fonts::to_block_string(scramble.as_str()).color(color)
+        );
         newln!(3);
     }
 
@@ -181,11 +205,6 @@ impl Anagrams {
         for section in sections {
             self.print_section(section, &wrong);
         }
-
-        if self.check_win() {
-            newln!();
-            println!("You won!");
-        }
     }
 
     fn print_section(&self, section: usize, wrong: &Option<String>) {
@@ -194,7 +213,9 @@ impl Anagrams {
             .into_iter()
             .next()
             .unwrap()
-            .len() / 2 - 8;
+            .len()
+            / 2
+            - 8;
 
         let header = format!(" {section}-letter words ");
         let padding_length = (section_width - header.len()) / 2;
@@ -222,22 +243,22 @@ impl Anagrams {
         match section_answers.get(row) {
             Some(answer) => {
                 print!("{} ", left);
-                    for c in answer.chars() {
-                        print!("{} ", c.to_ascii_uppercase().to_string().green());
-                        flush!();
+                for c in answer.chars() {
+                    print!("{} ", c.to_ascii_uppercase().to_string().green());
+                    flush!();
 
-                        if section_answers.get(row + 1).is_none() {
-                            sleep!(100);
-                        }
+                    if section_answers.get(row + 1).is_none() {
+                        sleep!(100);
                     }
+                }
                 println!("{}", right);
-            },
+            }
             None => {
                 if let Some(guess) = wrong {
-                    if section == guess.len() 
-                    && (section_answers.get(row - 1).is_some() 
-                    || (section_answers.get(row).is_none() 
-                    && row == 0)) {
+                    if section == guess.len()
+                        && (section_answers.get(row - 1).is_some()
+                            || (section_answers.get(row).is_none() && row == 0))
+                    {
                         print!("{} ", left);
                         for c in guess.chars() {
                             print!("{} ", c.to_ascii_uppercase().to_string().red());
@@ -251,29 +272,41 @@ impl Anagrams {
 
                 println!("\r\x1B[K{}{}{}", left, placeholder, right);
                 flush!();
-            },
+            }
         }
     }
 
     fn insert_entry(&mut self, guess: &String) -> bool {
         let entry_limit = self.params.entry_min(guess.len());
-        let entry_count = self
-            .answers
-            .get(&guess.len())
-            .unwrap()
-            .len();
+        let entry_count = self.answers.get(&guess.len()).unwrap().len();
 
         let res = entry_count < entry_limit;
 
         if res {
             self.answers.entry(guess.len()).and_modify(|e| {
                 if !e.contains(guess) {
-                    e.push(guess.to_owned()); 
+                    e.push(guess.to_owned());
                 }
             });
         }
 
         res
+    }
+
+    fn populate_answers(&mut self) {
+        let words = self.get_words();
+
+        for letters in self.params.letter_range.clone() {
+            let mut words = words.get(&letters).unwrap().iter();
+            let answers = self.answers.get_mut(&letters).unwrap();
+
+            let entries_required = self.params.entry_min(letters) - answers.len();
+
+            for _ in 0..entries_required {
+                let word = words.next().unwrap();
+                answers.push(word.clone());
+            }
+        }
     }
 
     fn check_win(&self) -> bool {
@@ -287,28 +320,50 @@ impl Anagrams {
     }
 
     fn get_scramble(&self) -> String {
-        self
-            .anagram
-            .clone()
-            .expect("Anagram not chosen!")
-            .scramble
+        self.anagram.clone().expect("Anagram not chosen!").scramble
+    }
+
+    fn get_words(&self) -> HashMap<usize, Vec<String>> {
+        self.anagram.clone().expect("Anagram not chosen!").words
     }
 
     fn handle_commands(&mut self, cmd: &String) -> i32 {
         match cmd.as_str() {
             "!hint" | "!h" => {
-                todo!()
+                // Most functional thing I've ever written and it's so ugly I love it.
+                // All this does is picks a random word from the hashmap of words formable
+                // from the Anagram excluding ones already answered.
+                let word: String = self
+                    .get_words()
+                    .into_iter()
+                    .fold(Vec::new(), |mut list, (letters, mut sub)| {
+                        if self.params.letter_range.contains(&letters) {
+                            list.append(&mut sub);
+                        }
+                        list
+                    })
+                    .into_iter()
+                    .filter(|word| {
+                        !self.answers.get(&word.len()).unwrap().contains(word)
+                            && webster::dictionary(word).is_some()
+                    })
+                    .collect::<Vec<String>>()
+                    .choose(&mut rand::thread_rng())
+                    .expect("Failed to choose random hint!")
+                    .to_owned();
+
+                println!("Hint: {}", hint(&word));
+                GAME_ONGOING
             }
             "!restart" | "!next" | "!reset" | "!r" => {
-                print!("Restarting in 3.. ");
+                self.populate_answers();
+                self.display_big_scramble(false, "red");
+                self.display(None);
+                println!("Here's what you missed!");
+
+                print!("Restarting in 5.. ");
                 flush!();
-                sleep!(1000);
-                print!("2.. ");
-                flush!();
-                sleep!(1000);
-                print!("1.. ");
-                flush!();
-                sleep!(1000);
+                sleep!(5000);
 
                 GAME_RESTART
             }

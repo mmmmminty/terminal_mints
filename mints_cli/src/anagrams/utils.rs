@@ -1,4 +1,4 @@
-use std::{ops::RangeInclusive, collections::HashMap};
+use std::{collections::HashMap, ops::RangeInclusive};
 
 use mints_lib::Difficulty;
 
@@ -6,7 +6,7 @@ use mints_lib::Difficulty;
 pub struct AnagramParams {
     pub letter_range: RangeInclusive<usize>,
     pub difficulty: Difficulty,
-    entry_amounts: HashMap<usize, (usize, usize, usize)>
+    entry_amounts: HashMap<usize, (usize, usize, usize)>,
 }
 
 impl AnagramParams {
@@ -26,7 +26,7 @@ impl AnagramParams {
                 6 => (1, 3, 4),
                 7 => (0, 2, 3),
                 8 => (0, 0, 2),
-                _ => panic!("Check that ranges and entries match!s")
+                _ => panic!("Check that ranges and entries match!s"),
             };
             map.insert(i, insert);
         }
@@ -34,7 +34,7 @@ impl AnagramParams {
         AnagramParams {
             letter_range: range,
             difficulty: diff.clone(),
-            entry_amounts: map
+            entry_amounts: map,
         }
     }
 

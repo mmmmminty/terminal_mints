@@ -229,6 +229,7 @@ name = "mints_lib"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "colored",
  "rand",
  "terminal-fonts",
  "terminal_size",

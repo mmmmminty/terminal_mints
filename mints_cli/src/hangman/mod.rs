@@ -56,6 +56,7 @@ impl Game for Hangman {
     }
 
     fn start(&mut self) {
+        titled_loading_screen("hangman", "white", 800);
         self.display(None);
         // println!("Answer: {}", self.answer);
         // println!("Hint: {}", hint(&self.answer));

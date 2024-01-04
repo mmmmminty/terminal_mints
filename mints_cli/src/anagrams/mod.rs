@@ -94,7 +94,7 @@ impl Game for Anagrams {
             s.spawn(|| {
                 self.anagram = Some(Anagram::new(&list, ANAGRAM_SCRAMBLE_SIZE, &self.params))
             });
-            titled_loading_screen("ANAGRAMS", "white", 3000);
+            titled_loading_screen("anagrams", "white", 3000);
         });
 
         self.display_big_scramble(false, "yellow");

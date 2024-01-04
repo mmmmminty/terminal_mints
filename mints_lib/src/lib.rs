@@ -289,6 +289,7 @@ pub fn titled_loading_screen(header: &str, color: &str, ms: usize) {
 
     let hold_time = ms / 4;
     let print_time = ((ms / 4) * 3) / header.len();
+    let header = header.to_ascii_uppercase();
 
     clear!();
     for (i, _) in header.chars().enumerate() {

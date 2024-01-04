@@ -44,6 +44,7 @@ impl Game for Wordle {
     }
 
     fn start(&mut self) {
+        titled_loading_screen("wordle", "white", 800);
         Display::display(DisplayType::Start, &self);
         // println!("Answer: {}", self.answer);
         // println!("Hint: {}", hint(&self.answer));

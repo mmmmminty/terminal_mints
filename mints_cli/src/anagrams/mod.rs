@@ -25,7 +25,7 @@ pub const ANAGRAM_SCRAMBLE_SIZE: usize = 8;
 pub const ANAGRAM_WORD_LIST: &str = include_str!("./anagram_words.txt");
 
 /// This is the minimum terminal width required to play Anagrams (as a result of the big text).
-const MIN_TERM_WIDTH: usize = 75;
+const MIN_TERM_WIDTH: usize = 70;
 
 #[derive(Clone)]
 pub struct Anagrams {
@@ -160,11 +160,13 @@ impl Game for Anagrams {
     }
 
     fn finish(mut self) {
-        clear!();
-        self.populate_answers();
-        self.display_big_scramble(false, "red");
-        self.display(None);
-        println!("Here's what you missed!");
+        if !self.check_win() {
+            clear!();
+            self.populate_answers();
+            self.display_big_scramble(false, "red");
+            self.display(None);
+            println!("Here's what you missed!");
+        }
 
         drop(self);
     }

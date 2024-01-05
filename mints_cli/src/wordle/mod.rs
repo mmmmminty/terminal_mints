@@ -4,7 +4,7 @@ use std::{
     collections::HashMap,
     error::Error,
     io::{BufRead, BufReader, Write},
-    time::{Duration, Instant},
+    time::Instant,
 };
 
 use colored::Colorize;
@@ -156,14 +156,14 @@ impl Wordle {
                 println!("The word was {}!", self.answer);
 
                 print!("Restarting in 3.. ");
-                std::io::stdout().flush().expect("Failed to flush stdout");
-                std::thread::sleep(Duration::from_secs(1));
+                flush!();
+                sleep!(1000);
                 print!("2.. ");
-                std::io::stdout().flush().expect("Failed to flush stdout");
-                std::thread::sleep(Duration::from_secs(1));
+                flush!();
+                sleep!(1000);
                 print!("1.. ");
-                std::io::stdout().flush().expect("Failed to flush stdout");
-                std::thread::sleep(Duration::from_secs(1));
+                flush!();
+                sleep!(1000);
 
                 GAME_RESTART
             }

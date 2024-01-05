@@ -2,7 +2,7 @@ use std::{
     collections::HashSet,
     error::Error,
     io::{BufRead, BufReader, Write},
-    time::{Duration, Instant},
+    time::Instant,
 };
 
 use colored::Colorize;
@@ -195,6 +195,8 @@ impl Hangman {
         for c in self.answer.chars() {
             if self.correct.contains(&c) {
                 print!(" {} ", c.to_string().green().bold());
+            } else if win.is_some_and(|won| !won) {
+                print!(" {} ", c.to_string().yellow().bold());
             } else {
                 print!(" {} ", "_".to_string().bold());
             }
@@ -228,14 +230,14 @@ impl Hangman {
                 println!("The word was {}!", self.answer);
 
                 print!("Restarting in 3.. ");
-                std::io::stdout().flush().expect("Failed to flush stdout");
-                std::thread::sleep(Duration::from_secs(1));
+                flush!();
+                sleep!(1000);
                 print!("2.. ");
-                std::io::stdout().flush().expect("Failed to flush stdout");
-                std::thread::sleep(Duration::from_secs(1));
+                flush!();
+                sleep!(1000);
                 print!("1.. ");
-                std::io::stdout().flush().expect("Failed to flush stdout");
-                std::thread::sleep(Duration::from_secs(1));
+                flush!();
+                sleep!(1000);
 
                 GAME_RESTART
             }

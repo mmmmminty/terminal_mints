@@ -107,12 +107,17 @@ pub trait Game {
 }
 
 #[allow(dead_code)]
+/// Enums for the different word-lists available.
 enum ListType {
+    /// This is all words, only filtered by letter and repeats. Some words **don't exist**.
     Gpt,
-    Webster,
+
+    /// This contains only words defined by the Webster dictionary. **All words exist, but not all are included.**
+    Webster
 }
 
 #[derive(ValueEnum, Clone, Debug)]
+/// These are the games available. Game names are parsed through `clap`'s `ValueParser`.
 pub enum Mints {
     Wordle,
     Hangman,
@@ -120,6 +125,7 @@ pub enum Mints {
 }
 
 #[derive(ValueEnum, Clone, Debug)]
+/// Three default difficulties for games to make use of.
 pub enum Difficulty {
     Easy,
     Medium,

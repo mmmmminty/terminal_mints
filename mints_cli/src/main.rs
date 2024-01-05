@@ -16,6 +16,9 @@ fn main() {
     } {}
 }
 
+/// The default execution cycle of a given `Game` object. This function returns
+/// true if the exit code `GAME_RESTART` is received, and terminates the program
+/// when `GAME_OVER` is received.
 fn run_game<G: Game>(mut game: G) -> bool {
     game.start();
 

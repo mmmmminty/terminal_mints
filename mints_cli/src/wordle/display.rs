@@ -4,6 +4,8 @@ use crate::wordle::Wordle;
 use colored::Colorize;
 use terminal_size::{terminal_size, Width};
 
+use mints_lib::*;
+
 pub struct Display;
 
 pub enum DisplayType {
@@ -17,7 +19,7 @@ impl Display {
     pub fn display(display: DisplayType, game: &Wordle) {
         // Clear terminal
         print!("{}[2J", 27 as char);
-        println!();
+        newln!();
 
         let term_width = if let Some((Width(w), _)) = terminal_size() {
             w as usize
@@ -44,7 +46,7 @@ impl Display {
             Self::print_row(game, index);
         }
 
-        println!();
+        newln!();
     }
 
     fn print_row(game: &Wordle, index: i32) {
@@ -113,6 +115,6 @@ impl Display {
 
         print!("{}", sides.1);
         print!("{}", padding);
-        println!();
+        newln!();
     }
 }

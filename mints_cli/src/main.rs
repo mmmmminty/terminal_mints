@@ -5,6 +5,7 @@ use mints_lib::*;
 mod anagrams;
 mod hangman;
 mod wordle;
+mod minesweeper;
 
 fn main() {
     let args = Args::parse();
@@ -13,6 +14,7 @@ fn main() {
         Mints::Wordle => run_game(wordle::Wordle::new(args.clone())),
         Mints::Hangman => run_game(hangman::Hangman::new(args.clone())),
         Mints::Anagrams => run_game(anagrams::Anagrams::new(args.clone())),
+        Mints::Minesweeper => run_game(minesweeper::Minesweeper::new(args.clone()))
     } {}
 }
 

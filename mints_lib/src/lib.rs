@@ -122,6 +122,7 @@ pub enum Mints {
     Wordle,
     Hangman,
     Anagrams,
+    Minesweeper
 }
 
 #[derive(ValueEnum, Clone, Debug)]
@@ -313,10 +314,18 @@ pub fn titled_loading_screen(header: &str, color: &str, ms: usize) {
 
     clear!();
     for (i, _) in header.chars().enumerate() {
-        print!(
-            "{}",
-            terminal_fonts::to_block_string(&header[0..=i]).color(color)
-        );
+
+        // if i < 8 {
+            print!(
+                "{}",
+                terminal_fonts::to_block_string(&header[0..=i]).color(color)
+            );
+        // } else {
+        //     print!(
+        //         "{}",
+        //         terminal_fonts::to_block_string(&header[8..=i]).color(color)
+        //     );
+        // }
         newln!(middle);
         flush!();
 

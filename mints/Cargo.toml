@@ -1,0 +1,22 @@
+[package]
+name = "mints"
+version = "0.1.0"
+authors = ["Xavier Carey"]
+edition = "2021"
+description = "A crate for minting digital assets"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/mmmmminty/terminal_mints"
+readme = "README.md"
+keywords = ["terminal game", "wordle", "anagrams", "minesweeper", "hangman"]
+categories = ["games", "command-line-utilities", "text-processing"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.4.11", features = ["derive"] }
+colored = "2.1.0"
+rand = "0.8.5"
+terminal-fonts = "0.1.0"
+terminal_size = "0.3.0"
+webster = "0.3.0"
+

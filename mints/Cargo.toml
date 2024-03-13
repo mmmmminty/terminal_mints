@@ -7,7 +7,7 @@ description = "A crate for minting digital assets"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/mmmmminty/terminal_mints"
 readme = "README.md"
-keywords = ["terminal game", "wordle", "anagrams", "minesweeper", "hangman"]
+keywords = ["procrastination", "wordle", "anagrams", "minesweeper", "hangman"]
 categories = ["games", "command-line-utilities", "text-processing"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
